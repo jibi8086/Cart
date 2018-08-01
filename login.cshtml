@@ -1,0 +1,120 @@
+
+<link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+<script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+<!------ Include the above in your HEAD tag ---------->
+<!--
+    you can substitue the span of reauth email for a input with the email and
+    include the remember me checkbox
+    -->
+<link href="~/Content/login.css" rel="stylesheet" />
+<body>
+    <div class="container">
+        <div class="card card-container">
+            <!-- <img class="profile-img-card" src="//lh3.googleusercontent.com/-6V8xOA6M7BA/AAAAAAAAAAI/AAAAAAAAAAA/rzlHcD0KYwo/photo.jpg?sz=120" alt="" /> -->
+            <img id="profile-img" class="profile-img-card" src="//ssl.gstatic.com/accounts/ui/avatar_2x.png" />
+            <p id="profile-name" class="profile-name-card"></p>
+            <form class="form-signin" action="">
+                <span id="reauth-email" class="reauth-email"></span>
+                <input type="email" id="inputEmail" class="form-control" placeholder="Email address" required autofocus />
+                <input type="password" id="inputPassword" class="form-control" placeholder="Password" required>
+                <div id="remember" class="checkbox">
+                    <label>
+                        <input type="checkbox" value="remember-me"> Remember me
+                    </label>
+                </div>
+                <input class="btn btn-lg btn-primary btn-block btn-signin" type="submit" id="btnSubmit" value="Sign in" onclick="login()">
+            </form><!-- /form -->
+            <a href="#" class="forgot-password">
+                Forgot the password?
+            </a>
+            <label id="lblerror" class="lblColor"></label>
+        </div><!-- /card-container -->
+    </div><!-- /container -->
+</body>
+<script type="text/javascript">
+    $(document).ready(function () {
+
+        //$('#btnSubmit').click(function (event) {
+        //    // cancels the form submission
+        //    event.preventDefault();
+        //    alert("test");
+        //    // do whatever you want here
+        //});
+
+    });
+
+    function login() {
+        $('#lblerror').text("");
+        var name = $("#inputEmail").val();
+        var password = $("#inputPassword").val();
+       // function validate();
+        if ((name == '' || password == '')) {
+            $('#lblerror').text("* Fields are mandatory");
+        }
+        else {
+            var filter = /^([a-zA-Z0-9_\.\-])+\@@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/;
+            if (!filter.test(name)) {
+                alert("");
+                $('#lblerror').text("Please enter valid email");
+            }
+            else
+            {
+                $.ajax({
+                    type: "POST",
+                    url: "/Login/LoginData",
+                    data: { UserName: name, UserPassword: password },
+                    success: function (response) {
+                        window.location.href = '/Home/Home';
+                        $('#load').html('');
+                        if (response.id > 0) {
+                            window.location.href = '/Home/Home';
+                            if (response.type == false) {
+                                //$.ajax({
+                                //    type: "POST",
+                                //    url: "/Home/DynamicMenu",
+                                //    data: { TaskId: 1 },
+                                //    contentType: false,
+                                //    processData: false,
+                                //    success: function (response) {
+                                //        var JobDetails = $.parseJSON(response);
+                                //        if (response.id == -1) {
+
+                                //        }
+                                //        else {
+
+
+                                //        }
+
+                                //    },
+                                //    failure: function (response) {
+
+                                //    },
+                                //    error: function (response) {
+
+                                //    }
+                                //});
+                                window.location.href = '/Home/Home';
+                            }
+                            
+                        }
+                        else if ((response.id == 0) && (response.type == false)) {
+
+                            $('#lblerror').text("Incorrect Username or Password!! Retry..");
+
+                        }
+                        else if (response.id == -1) {
+                            $('#lblerror').text("Some Error occur Please try again later");
+                        }
+                    },
+                    failure: function (response) {
+                    },
+                    error: function (response) {
+                    }
+                });
+            }
+        }
+
+    }
+ 
+    </script>
